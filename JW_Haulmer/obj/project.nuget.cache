@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "0/2v2TLlgUnQiL4JBJAa2mQWYM6E/1WOIHIN7rJ11WI93BqG4231gV2lp+24RRC78e3QVfw3okFVMlf2/pEOTQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\gb0109\\source\\repos\\JW_Haulmer\\JW_Haulmer\\JW_Haulmer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\gb0109\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.11.1\\microsoft.visualstudio.azure.containers.tools.targets.1.11.1.nupkg.sha512"
+  ],
+  "logs": []
+}

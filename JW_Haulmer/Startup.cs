@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JW_Haulmer.Services;
 
 namespace JW_Haulmer
 {
@@ -26,6 +27,7 @@ namespace JW_Haulmer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<AcquirerMockService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

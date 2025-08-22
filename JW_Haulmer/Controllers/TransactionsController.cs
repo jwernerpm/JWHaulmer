@@ -24,13 +24,12 @@ namespace JW_Haulmer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostTransaction([FromBody] TransactionRequest request)
+        public IActionResult PostTransaction([FromBody] TransactionRequest request)
         {
-           // valida el largo del numero de la tarjeda
+      
             if (string.IsNullOrWhiteSpace(request.Pan) || request.Pan.Length < 12 || request.Pan.Length > 19)
                 return BadRequest("Invalid PAN");
-
-            //valida formato de expiracion, Falta validar si esta o no expirada.
+                       
             if (string.IsNullOrWhiteSpace(request.Expiry) || !Regex.IsMatch(request.Expiry, @"^(0[1-9]|1[0-2])\/\d{2}$"))
             {
                 return BadRequest("Invalid Expiry format (MM/YY)");
@@ -43,23 +42,13 @@ namespace JW_Haulmer.Controllers
                 return BadRequest("Invalid currency");
 
             // autorización mock ISO
-            var (iso, authCode, status) = _acquirer.Authorize(request.Amount);
+            var (iso, authCode, status) = _acquirer.Authorize(request.Amount, request.Pan, request.Cvv, request.Expiry);
             using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                
+            {       
                 conn.Open();
-               
-                
-                string sql = @"
-                    INSERT INTO Transactions
-                        (MerchantId, PanMasked, Expiry, Amount, Currency, Status, IsoCode, AuthorizationCode)
-                    OUTPUT INSERTED.TransactionId
-                    VALUES
-                        (@MerchantId, @PanMasked, @Expiry, @Amount, @Currency, @Status, @IsoCode, @AuthorizationCode);
-                ";
-                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                using (SqlCommand cmd = new SqlCommand("InsertTransaction", conn))
                 {
-                   // cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@MerchantId", request.MerchantId);
                     cmd.Parameters.AddWithValue("@PanMasked", MaskPan(request.Pan));
                     cmd.Parameters.AddWithValue("@Expiry", request.Expiry);
@@ -85,7 +74,6 @@ namespace JW_Haulmer.Controllers
 
         private string MaskPan(string pan)
         {
-            if (pan.Length < 10) return pan;
             return $"{pan.Substring(0, 6)}******{pan.Substring(pan.Length - 4)}";
         }
     }
